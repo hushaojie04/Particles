@@ -9,6 +9,8 @@ import android.opengl.GLES20;
 public class ParticleShaderProgram extends ShaderProgram{
     private final int uMatrixLocation;
     private final int uTimeLocation;
+    private final int uTextureUnitLocation;
+
     private final int aPositionLocation;
     private final int aColorLocation;
     private final int aDirectionVectorLocation;
@@ -23,11 +25,16 @@ public class ParticleShaderProgram extends ShaderProgram{
         aColorLocation = GLES20.glGetAttribLocation(program,A_COLOR);
         aDirectionVectorLocation=GLES20.glGetAttribLocation(program,A_DIRECTION_VECTOR);
         aParticleStartTimeLocation=GLES20.glGetAttribLocation(program,A_PARTICLE_START_TIME);
+
+        uTextureUnitLocation = GLES20.glGetUniformLocation(program,U_TEXTURE_UNIT);
     }
-    public void setUniforms(float[] matrix,float elapsedTime)
+    public void setUniforms(float[] matrix,float elapsedTime,int textureId)
     {
         GLES20.glUniformMatrix4fv(uMatrixLocation, 1, false, matrix, 0);
         GLES20.glUniform1f(uTimeLocation,elapsedTime);
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D,textureId);
+        GLES20.glUniform1i(uTextureUnitLocation,0);
     }
     public int getPositionAttributeLocaton()
     {

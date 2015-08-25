@@ -83,8 +83,4 @@ public class ParticleSystem {
         GLES20.glDrawArrays(GLES20.GL_POINTS,0,currentParticleCount);
     }
 
-
-
-
-
 }
