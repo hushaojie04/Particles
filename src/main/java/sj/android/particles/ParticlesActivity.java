@@ -20,6 +20,32 @@ public class ParticlesActivity extends Activity {
         glSurfaceView.setEGLContextClientVersion(2);
         final ParticlesRenderer airHockeyRenderer = new ParticlesRenderer(this);
         glSurfaceView.setRenderer(airHockeyRenderer);
+        glSurfaceView.setOnTouchListener(new View.OnTouchListener() {
+            float previousX, previousY;
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event != null) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        previousX = event.getX();
+                        previousY = event.getY();
+                    } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                        final float deltaX = event.getX() - previousX;
+                        final float deltaY = event.getY() - previousY;
+                        previousX = event.getX();
+                        previousY = event.getY();
+                        glSurfaceView.queueEvent(new Runnable() {
+                            @Override
+                            public void run() {
+                                airHockeyRenderer.handleTouchDrag(deltaX, deltaY);
+                            }
+                        });
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
         setContentView(glSurfaceView);
     }
 
