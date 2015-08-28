@@ -76,6 +76,9 @@ public class Geometry {
             return new Vector(x * f, y * f, z * f);
         }
 
+        public Vector normalize() {
+            return scale(1f / length());
+        }
     }
 
     public static class Ray {

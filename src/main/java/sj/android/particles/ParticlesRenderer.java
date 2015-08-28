@@ -45,6 +45,10 @@ public class ParticlesRenderer implements GLSurfaceView.Renderer {
 
     private final float[] tempMatrix = new float[16];
     private final float[] modeViewProjectionMatrix = new float[16];
+    //day
+//    private final Geometry.Vector vectorToLight = new Geometry.Vector(0.61f, 0.64f, -0.47f).normalize();
+    //night
+    private final Geometry.Vector vectorToLight = new Geometry.Vector(0.30f, 0.35f, -0.89f).normalize();
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -69,9 +73,14 @@ public class ParticlesRenderer implements GLSurfaceView.Renderer {
 
         skyboxProgram = new SkyboxShaderProgram(context);
         skybox = new Skybox();
-        skyboxTexture = TextureHelper.loadCubeMap(context, new int[]{R.drawable.left, R.drawable.right,
-                R.drawable.bottom, R.drawable.top,
-                R.drawable.front, R.drawable.back});
+        //day
+//        skyboxTexture = TextureHelper.loadCubeMap(context, new int[]{R.drawable.left, R.drawable.right,
+//                R.drawable.bottom, R.drawable.top,
+//                R.drawable.front, R.drawable.back});
+        //night
+        skyboxTexture = TextureHelper.loadCubeMap(context, new int[]{R.drawable.night_left, R.drawable.night_right,
+                R.drawable.night_bottom, R.drawable.night_top,
+                R.drawable.night_front, R.drawable.night_back});
     }
 
     @Override
@@ -137,7 +146,7 @@ public class ParticlesRenderer implements GLSurfaceView.Renderer {
         Matrix.scaleM(modelMatrix, 0, 100f, 10f, 100f);
         updateMvpMatrix();
         heightmapProgram.useProgram();
-        heightmapProgram.setUniforms(modeViewProjectionMatrix);
+        heightmapProgram.setUniforms(modeViewProjectionMatrix, vectorToLight);
         heightmap.bindData(heightmapProgram);
         heightmap.draw();
     }
