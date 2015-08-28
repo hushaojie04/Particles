@@ -11,7 +11,6 @@ import java.nio.FloatBuffer;
  */
 public class VertexArray {
     private final FloatBuffer floatBuffer;
-
     public VertexArray(float[] vertexData) {
         floatBuffer = getFloatBuffer(vertexData);
     }
@@ -37,5 +36,4 @@ public class VertexArray {
         floatBuffer.put(vertexData,start,count);
         floatBuffer.position(0);
     }
-
 }
