@@ -13,6 +13,7 @@ public class Heightmap {
     private static final int TOTAL_COMPONENT_COUNT = POSITION_COMPONENT_COUNT + NORMAL_COMPONENT_COUNT;
     private static final int STRIDE = (POSITION_COMPONENT_COUNT + NORMAL_COMPONENT_COUNT) * Constants.BYTES_PER_FLOAT;
 
+
     private final int width;
     private final int height;
     private final int numElements;

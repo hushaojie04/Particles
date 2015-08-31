@@ -37,7 +37,8 @@ public class ParticlesRenderer implements GLSurfaceView.Renderer {
     private int skyboxTexture;
     private HeightmapShaderProgram heightmapProgram;
     private Heightmap heightmap;
-
+    private final float[] modelViewMatrix = new float[16];
+    private final float[] it_modelViewMatrix = new float[16];
     private final float[] modelMatrix = new float[16];
     private final float[] viewMatrix = new float[16];
     private final float[] viewMatrixforSkybox = new float[16];
@@ -48,7 +49,18 @@ public class ParticlesRenderer implements GLSurfaceView.Renderer {
     //day
 //    private final Geometry.Vector vectorToLight = new Geometry.Vector(0.61f, 0.64f, -0.47f).normalize();
     //night
-    private final Geometry.Vector vectorToLight = new Geometry.Vector(0.30f, 0.35f, -0.89f).normalize();
+//    private final Geometry.Vector vectorToLight = new Geometry.Vector(0.30f, 0.35f, -0.89f).normalize();
+    private final float[] vectorToLight = {0.30f, 0.35f, -0.89f, 0f};
+    private final float[] pointLightPositions = new float[]{
+            -1f, 1f, 0f, 1f,
+            0f, 1f, 0f, 1f,
+            1f, 1f, 0f, 1f
+    };
+    private final float[] pointLightColors = new float[]{
+            1.00f, 0.20f, 0.02f,
+            0.02f, 0.25f, 0.02f,
+            0.02f, 0.20f, 1.00f
+    };
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -146,7 +158,17 @@ public class ParticlesRenderer implements GLSurfaceView.Renderer {
         Matrix.scaleM(modelMatrix, 0, 100f, 10f, 100f);
         updateMvpMatrix();
         heightmapProgram.useProgram();
-        heightmapProgram.setUniforms(modeViewProjectionMatrix, vectorToLight);
+        final float[] vectorToLightInEyeSpace = new float[4];
+        final float[] pointPositionsInEyeSpace = new float[12];
+        Matrix.multiplyMV(vectorToLightInEyeSpace, 0, viewMatrix, 0, vectorToLight, 0);
+        Matrix.multiplyMV(pointPositionsInEyeSpace, 0, viewMatrix, 0, pointLightPositions, 0);
+        Matrix.multiplyMV(pointPositionsInEyeSpace, 4, viewMatrix, 0, pointLightPositions, 4);
+        Matrix.multiplyMV(pointPositionsInEyeSpace, 8, viewMatrix, 0, pointLightPositions, 8);
+        heightmapProgram.setUniforms(modelViewMatrix, it_modelViewMatrix
+                , modeViewProjectionMatrix
+                , vectorToLightInEyeSpace
+                , pointPositionsInEyeSpace
+                , pointLightColors);
         heightmap.bindData(heightmapProgram);
         heightmap.draw();
     }
@@ -173,8 +195,10 @@ public class ParticlesRenderer implements GLSurfaceView.Renderer {
     }
 
     private void updateMvpMatrix() {
-        Matrix.multiplyMM(tempMatrix, 0, viewMatrix, 0, modelMatrix, 0);
-        Matrix.multiplyMM(modeViewProjectionMatrix, 0, projectionMatrix, 0, tempMatrix, 0);
+        Matrix.multiplyMM(modelViewMatrix, 0, viewMatrix, 0, modelMatrix, 0);
+        Matrix.invertM(tempMatrix, 0, modelViewMatrix, 0);
+        Matrix.transposeM(it_modelViewMatrix, 0, tempMatrix, 0);
+        Matrix.multiplyMM(modeViewProjectionMatrix, 0, projectionMatrix, 0, modelViewMatrix, 0);
     }
 
     private void updateMvpMatrixForSkybox() {
